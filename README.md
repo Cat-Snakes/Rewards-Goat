@@ -1,1 +1,1 @@
-# Rewards-Goat
+# rewards
