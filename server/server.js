@@ -17,7 +17,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 // const PORT = process.env.PORT;
 const supabase = createClient(supabaseUrl, supabaseKey);
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 checkDatabaseConnection();
 
 //          << Necessary >>
