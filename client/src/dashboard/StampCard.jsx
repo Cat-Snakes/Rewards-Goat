@@ -1,7 +1,7 @@
 import React from 'react';
 import './StampCard.css';
-import starFilled from '../src/assets/star-filled.svg';
-import starUnfilled from '../src/assets/star-unfilled.svg';
+import starFilled from '../assets/star-filled.svg';
+import starUnfilled from '../assets/star-unfilled.svg';
 
 const handleRedeem = async (businessName, stars, customer) => {
 //   try {
