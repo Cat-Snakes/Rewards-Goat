@@ -16,6 +16,8 @@ test('should render the BusinessDashboard component', () => {
     expect(screen.getByText(/Enroll a customer/i)).toBeInTheDocument();
 });
 
+
+test ('')
 // test('should navigate to the customer list when the button is clicked', () => {
 //     render(
 //         <MemoryRouter>
