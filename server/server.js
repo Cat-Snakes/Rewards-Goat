@@ -12,9 +12,9 @@ import { checkDatabaseConnection } from "./models/models.js";
 const app = express();
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL2;
 // console.log('supabaseUrl',supabaseUrl)
-const supabaseKey = process.env.SUPABASE_KEY;
+const supabaseKey = process.env.SUPABASE_KEY2;
 // const PORT = process.env.PORT;
 const supabase = createClient(supabaseUrl, supabaseKey);
 const PORT = process.env.PORT
