@@ -7,46 +7,47 @@ function Registration() {
   const [phoneNumber, updatePhone] = useState(0);
   const [password, updatePassword] = useState('');
   const [businessName, updateBusiness] = useState('');
-  const [userType, updateUser] = useState('Customer');
+  const [userType, updateUser] = useState('customer');
   const navigate = useNavigate();
 
   const cycle = {
-    Customer: 'Business',
-    Business: 'Customer',
+    customer: 'business',
+    business: 'customer',
   };
 
   async function submit() {
     let userData;
-    if (userType === 'Customer') {
+    if (userType === 'customer') {
       userData = {
         username: username,
         password: password,
         phone: phoneNumber,
-        usertype: userType,
+        user_type: userType,
       };
     } else {
       userData = {
         username: businessName,
         password: password,
         phone: phoneNumber,
-        usertype: userType,
+        user_type: userType,
       };
     }
     console.log(userData);
-    // const response = await 
+    // const response = await
     fetch('http://localhost:8082/api/users/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(userData),
-    }).then(response => response.json())
-    .then(data => {
-      if (data.usertype === "business") {
-        navigate(`../business/${data.username}`);
-      } else {
-        navigate(`../customer/${data.username}`);
-      }
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (userType === 'business') {
+          navigate('/businessdashboard');
+        } else {
+          navigate(`../customer/${data.username}`);
+        }
+      });
     //.then((response) => console.log('response: ', response));
     //send user data to appropriate endpoint, either to register customer or business
     //create cookie for username & ID, or Business Name & ID
@@ -55,20 +56,20 @@ function Registration() {
     // if (!response) {
     //   throw new Error(`Register error! Status: ${response.status}`);
     // }
-  //   const data = await response.json();
-  //   if (data.usertype === "business") {
-  //     navigate(`../../business/${data.username}`);
-  //   } else {
-  //     navigate(`../customer/${data.username}`);
-  //   }
+    //   const data = await response.json();
+    //   if (data.usertype === "business") {
+    //     navigate(`../../business/${data.username}`);
+    //   } else {
+    //     navigate(`../customer/${data.username}`);
+    //   }
   }
-  
+
   return (
     <div className='register-container'>
       <button onClick={() => updateUser(cycle[userType])}>
         Register As {userType}
       </button>
-      {userType === 'Business' && (
+      {userType === 'business' && (
         <div>
           <label htmlFor='businessName'>Business Name</label>
           <input
@@ -78,7 +79,7 @@ function Registration() {
           />
         </div>
       )}
-      {userType === 'Customer' && (
+      {userType === 'customer' && (
         <div>
           <label htmlFor='username'>Username </label>
           <input
@@ -110,9 +111,8 @@ function Registration() {
           onChange={(e) => updatePassword(e.target.value)}
         />
       </div>
-      
+
       <button onClick={submit}>Submit</button>
-      
     </div>
   );
 }
