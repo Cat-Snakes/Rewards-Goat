@@ -59,12 +59,10 @@ userController.loginUser = (req, res, next) => {
 
 userController.register = async (req, res, next) => {
   console.log('FULL REQ BODY: ', req.body);
-
-  const { username, phone, password, user_type } = req.body;
   console.log('REQBODYUSER_TYPE: ', req.body.user_type);
 
   res.locals.currentUser = req.body;
-  console.log('currentUser: ', res.locals.currentUser);
+  console.log('currentUser regis start: ', res.locals.currentUser);
 
   try {
     // logic for registration attempts
@@ -72,7 +70,7 @@ userController.register = async (req, res, next) => {
     console.log('TRY BLOCK ENTERED ALKDJFALSKDJF');
     const text = `SELECT EXISTS (SELECT 1 FROM accounts WHERE phone = $1) AS exists;`;
     // return { "exists": true } if exists
-    const result = await pool.query(text, [phone]);
+    const result = await pool.query(text, [req.body.phone]);
     console.log('RES HERE: ', result);
     if (result.rows[0].exists) {
       return next({
@@ -81,36 +79,77 @@ userController.register = async (req, res, next) => {
         message: { err: 'The phone number is already registered.' },
       });
     }
-    const text1 = `INSERT INTO accounts (name, phone, password, user_type) VALUES ($1, $2, $3, $4)`;
-    try {
-      const results1 = await pool.query(text1, [
-        username,
-        phone,
-        password,
-        user_type,
-      ]);
-      if (!results1 || results1.rowCount === 0) {
+    const registerCust = `INSERT INTO customer (name, phone, password, email, user_type) VALUES ($1, $2, $3, $4, $5)`;
+
+    const registerBiz = `INSERT INTO business (phone, business_name, password, email, user_type) VALUES ($1, $2, $3, $4, $5)`;
+
+    if (req.body.user_type === 'customer') {
+      try {
+        const resultCust = await pool.query(registerCust, [
+          req.body.name,
+          req.body.phone,
+          req.body.password,
+          req.body.email,
+          req.body.user_type,
+        ]);
+        if (!resultCust || resultCust.rowCount === 0) {
+          return next({
+            log: 'Insert failed.',
+            status: 500,
+            message: { err: 'User registration failed.' },
+          });
+        }
+      } catch (err) {
+        console.error('Query Error:', err);
         return next({
-          log: 'Insert failed.',
+          log: 'Database insert error.',
           status: 500,
-          message: { err: 'User registration failed.' },
+          message: { err: 'Error inserting user into database.' },
         });
       }
-    } catch (err) {
-      console.error('Query Error:', err);
-      return next({
-        log: 'Database insert error.',
-        status: 500,
-        message: { err: 'Error inserting user into database.' },
-      });
+    } else {
+      try {
+        const resultBiz = await pool.query(registerBiz, [
+          req.body.phone,
+          req.body.business_name,
+          req.body.password,
+          req.body.email,
+          req.body.user_type,
+        ]);
+        if (!resultBiz || resultBiz.rowCount === 0) {
+          return next({
+            log: 'Database business registration failed.',
+            status: 500,
+            message: { err: 'Business registration failed.' },
+          });
+        }
+      } catch (err) {
+        console.error('Query Error:', err);
+        return next({
+          log: 'Database business insert error.',
+          status: 500,
+          message: { err: 'Error inserting business into database.' },
+        });
+      }
     }
 
-    res.locals.user = { username, user_type };
-    console.log('res.locals.user: ', res.locals.user);
+    req.body.user_type === 'customer'
+      ? (res.locals.user = {
+          name: req.body.name,
+          email: req.body.email,
+          phone: req.body.phone,
+          user_type: req.body.user_type,
+        })
+      : (res.locals.business = {
+          business_name: req.body.business_name,
+          email: req.body.email,
+          phone: req.body.phone,
+        });
+
+    // console.log('res.locals.busine: ', res.locals.business);
+    // console.log('res.locals.user: ', res.locals.user);
     // res.status(201).json({ message: 'Registration successful!' });
     return next();
-    // if it does, return an error
-    // if it doesn't, log them in and add a new row in business_name Table
   } catch (err) {
     return next({
       log: `Internal server error during registering: ${err}`,
@@ -166,27 +205,51 @@ userController.isLoggedIn = (req, res, next) => {
   });
 };
 
-userController.setCookie = (req, res, next) => {
+userController.setCookie = (req, res, err, next) => {
   try {
     const currentUser = res.locals.currentUser;
     console.log('setCookie currentUser: ', currentUser);
-    //
-    if (!currentUser || !currentUser.phone || !currentUser.username) {
-      return next({
-        log: 'Error: Missing user data in setCookie',
-        status: 500,
-        message: { err: 'User data missing for setting cookies.' },
-      });
+
+    if (currentUser.user_type === 'customer') {
+      if (!currentUser || !currentUser.phone || !currentUser.username) {
+        return next({
+          log: 'Error: Missing customer user data in setCookie',
+          status: 500,
+          message: { err: 'Customer user data missing for setting cookies.' },
+        });
+      }
+
+      res.cookie('phone', currentUser.phone);
+      res.cookie('name', currentUser.name);
+      res.cookie('email', currentUser.email);
+    } else {
+      if (
+        !currentUser ||
+        !currentUser.business_name ||
+        !currentUser.emaiil ||
+        !currentUser.phone
+      ) {
+        return next({
+          log: `Error: Missing business user data in setCookie, ${err}`,
+          status: 500,
+          message: { err: 'Business user data missing for setting cookies.' },
+        });
+      }
+
+      res.cookie('phone', currentUser.phone);
+      res.cookie('phone', currentUser.business_name);
+      res.cookie('phone', currentUser.emaiil);
     }
-    //
-    res.cookie('phone', currentUser.phone);
-    res.cookie('username', currentUser.username);
     // console.log('res.locals.user: ', res.locals.user);
     console.log('cookies set for ', currentUser);
-    // console.log('res object: ', res._headers['set-cookie']);
+    console.log('res object: ', res._headers['set-cookie']);
     return next();
   } catch (err) {
-    return next(err);
+    return next({
+      log: `Error setting cookies after registration: ${err}`,
+      status: 500,
+      message: { err: 'Error setting cookies after registration.' },
+    });
   }
 };
 

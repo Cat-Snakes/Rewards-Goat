@@ -23,8 +23,11 @@ userRouter.post(
   userController.setCookie,
   (req, res) => {
     console.log('REGISTER ROUTER REACHED');
-    console.log('RESLOCALS.USER for REGISTER: ', res.locals.user);
-    return res.status(200).json(res.locals.user);
+    if (!res.locals.user) {
+      return res.status(200).json(res.locals.business);
+    } else {
+      return res.status(200).json(res.locals.user);
+    }
   }
 );
 
