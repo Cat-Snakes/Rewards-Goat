@@ -1,0 +1,33 @@
+.businessdash-inputs {
+  height: 1.5rem;
+  width: 15rem;
+  border-radius: 1rem;
+  background-color: grey;
+  color: black;
+  text-align: center;
+  margin: 1rem;
+}
+
+.businessdash-inputs ::placeholder {
+  color: black;
+  text-align: center;
+}
+
+.businessdash-containerone {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+.businessdash-containertwo {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.businessdash-buttons {
+  background-color: black;
+  margin: 1rem;
+}

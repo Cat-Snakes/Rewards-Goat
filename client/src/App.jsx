@@ -4,6 +4,9 @@ import Login from './login/Login.jsx';
 import Register from './register/Register.jsx';
 import BusDash from "./dashboard/BusDash.jsx";
 import CustomerDash from "./dashboard/CustomerDash.jsx";
+import BusinessDashboard from './businessdashboard/BusinessDashboard.jsx'
+import CustomerList from "./customerlist/CustomerList.jsx";
+import BusinessRewards from './businessrewards/BusinessRewards.jsx'
 
 function App() {
   return (
@@ -12,8 +15,11 @@ function App() {
           <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/business/:businessName" element={<BusDash />} />
+              {/* <Route path="/business/:businessName" element={<BusDash />} /> */}
               <Route path="/customer/:customerName" element={<CustomerDash />} />
+              <Route path="/businessdashboard" element = {<BusinessDashboard/>}/>
+              <Route path="/customerlist" element = {<CustomerList/>}/>
+              <Route path="/businessrewards" element = {<BusinessRewards/>}/>
           </Routes>
         </Router>
     </div>

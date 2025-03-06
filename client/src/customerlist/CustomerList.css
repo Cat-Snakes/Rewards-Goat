@@ -1,0 +1,35 @@
+ .customerlist-gridcontainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .customerlist-header {
+    font-weight: bold;
+    background-color: grey;
+    padding: 10px;
+  }
+  
+  .customerlist-row {
+    display: contents;
+  }
+  
+  .customerlist-item {
+    padding: 10px;
+    border-bottom: 1px solid grey;
+  }
+
+  .customerlist-containerone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .customerlist-dashboard {
+   margin: 50px;
+  }
+
+  

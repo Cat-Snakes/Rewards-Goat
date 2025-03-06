@@ -1,6 +1,6 @@
 import react from 'react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import './Login.css';
 import goatLogo from '../assets/goatlogo.svg';
 
@@ -23,7 +23,7 @@ function Login() {
     }
     const data = await response.json();
     if (data.usertype === "business") {
-      navigate(`/business/${data.username}`);
+      navigate(`/businessdashboard/`, { state: { username: username } });
     } else {
       navigate(`/customer/${data.username}`);
     }
