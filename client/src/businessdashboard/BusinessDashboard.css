@@ -2,7 +2,7 @@
   height: 1.5rem;
   width: 15rem;
   border-radius: 1rem;
-  background-color: purple;
+  background-color: grey;
   color: black;
   text-align: center;
   margin: 1rem;
@@ -28,6 +28,6 @@
 }
 
 .businessdash-buttons {
-  background-color: purple;
+  background-color: black;
   margin: 1rem;
 }
