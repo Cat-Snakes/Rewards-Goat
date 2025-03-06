@@ -11,6 +11,7 @@ const BusinessDashboard = () => {
 
   const [customerName, setCustomerName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [emailAddress, setEmailAddress] = useState('');
 
   const logout = () => {
     navigate('/');
@@ -24,8 +25,27 @@ const BusinessDashboard = () => {
     setPhoneNumber(e.target.value);
   };
 
-  const addNewCustomer = () => {
-    // navigate("/", { state: { username: username, customerName: customerName, phoneNumber: phoneNumber } });
+  const emailAddressInput = (e) => {
+    setEmailAddress(e.target.value);
+  };
+
+  const addNewCustomer = async () => {
+    const response = await fetch('http://localhost:8082/api/bus/addCustomer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: customerName,
+        phone: phoneNumber,
+        email: emailAddress,
+        user_type: 'customer',
+      }),
+    });
+    if (!response.ok){
+      console.error(response.statusText)
+    }
+    else{
+      alert('The user has been added to the database')
+    }
   };
 
   const listOfCurrentCustomers = () => {
@@ -65,6 +85,15 @@ const BusinessDashboard = () => {
               type='text'
               placeholder='Enter Client Phone Number Here'
               onChange={phoneNumberInput}
+            />
+          </div>
+          <div className='businessdash-containertwo'>
+            <h4>Email Address:</h4>
+            <input
+              className='businessdash-inputs'
+              type='text'
+              placeholder='Enter Client Email Address Here'
+              onChange={emailAddressInput}
             />
           </div>
           <button
