@@ -1,19 +1,19 @@
-import react from 'react';
+import React from 'react';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './BusinessDashboard.css';
 
 const BusinessDashboard = () => {
-  //   const navigate = useNavigate();
-  //   const location = useLocation();
-  //   const data = location.state;
-  //   const { username } = data;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const data = location.state || {};
+  const { username } = data;
 
   const [customerName, setCustomerName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const logout = () => {
-    // navigate("/", { state: { username: username } });
+    navigate('/');
   };
 
   const customerNameInput = (e) => {
@@ -29,11 +29,11 @@ const BusinessDashboard = () => {
   };
 
   const listOfCurrentCustomers = () => {
-    // navigate("/", { state: { username: username } });
+    navigate('/customerlist', { state: { username: username } });
   };
 
   const viewCurrentRewards = () => {
-    // navigate("/", { state: { username: username } });
+    navigate('/businessrewards', { state: { username: username } });
   };
 
   return (
