@@ -11,43 +11,44 @@ const userController = {};
 userController.loginUser = (req, res, next) => {
   console.log('Customer login middleware reached');
   const data = [req.body.phone, req.body.password];
-  console.log('customer login data: ', data);
+  console.log('customer login DATA: ', data);
   // res.locals.currentUser = req.body;
-  const existingCust =
-    'SELECT name, user_type FROM accounts WHERE phone=$1 AND password=$2';
+
+  const existingUser = `SELECT name, 'business' AS user_type FROM business WHERE phone=$1 AND password=$2 UNION 
+  SELECT name, 'customer' AS user_type 
+  FROM customer 
+  WHERE phone=$1 AND password=$2`;
+
   // automatically assumes the login wll not work
   res.locals.loginSuccessful = false;
   try {
-    //logic for customer login attempts
-
     // check if phone # exists first
-    pool.query(existingCust, data, (error, results) => {
+    pool.query(existingUser, data, (err, results) => {
       console.log('results', results.rows);
       res.locals.currentUser = {
-        username: results.rows[0].name,
+        name: results.rows[0].name,
         phone: req.body.phone,
       };
-      // ^ this prints [ { name: 'rachel' } ]
+      console.log('CURRENTUSER LOGGING IN: ', res.locals.currentUser);
+      // ^ this prints [ { name: 'rachel', phone: '8888888888' } ]
 
       if (results.rowCount === 1) {
         // user is now logged in
         res.locals.loginSuccessful = true;
         // user's name is saved (for the "welcome, [user] message")
         res.locals.user = {
-          username: results.rows[0].name,
-          usertype: results.rows[0].user_type.toLowerCase(),
+          name: results.rows[0].name,
+          user_type: results.rows[0].user_type,
         };
         return next();
       } else if (results.rowCount === 0) {
         return next({
-          log: 'log: No user found',
+          log: `log: No user found, ${err}`,
           message: 'Message: No user found',
         });
       }
     });
     // res.redirect(`http://localhost:5173/business`)
-    // check whether they're a business or customer (userType column in the database)
-    // check if the password matches the phone # given
   } catch (err) {
     // error handling
     return next({
@@ -81,7 +82,7 @@ userController.register = async (req, res, next) => {
     }
     const registerCust = `INSERT INTO customer (name, phone, password, email, user_type) VALUES ($1, $2, $3, $4, $5)`;
 
-    const registerBiz = `INSERT INTO business (phone, business_name, password, email, user_type) VALUES ($1, $2, $3, $4, $5)`;
+    const registerBiz = `INSERT INTO business (phone, name, password, email, user_type) VALUES ($1, $2, $3, $4, $5)`;
 
     if (req.body.user_type === 'customer') {
       try {
@@ -111,7 +112,7 @@ userController.register = async (req, res, next) => {
       try {
         const resultBiz = await pool.query(registerBiz, [
           req.body.phone,
-          req.body.business_name,
+          req.body.name,
           req.body.password,
           req.body.email,
           req.body.user_type,
@@ -141,7 +142,7 @@ userController.register = async (req, res, next) => {
           user_type: req.body.user_type,
         })
       : (res.locals.business = {
-          business_name: req.body.business_name,
+          name: req.body.name,
           email: req.body.email,
           phone: req.body.phone,
         });
@@ -167,7 +168,7 @@ userController.getDash = (req, res, next) => {
     const data = [req.cookies.phone];
     console.log('getDash data: ', data);
     console.log('req.body:', req.body);
-    const custDash = `SELECT * FROM (SELECT b.business_name, b.num_of_visits, b.phone, b.customer_name 
+    const custDash = `SELECT * FROM (SELECT b.name, b.num_of_visits, b.phone, b.customer_name 
         FROM business_info b 
            RIGHT JOIN accounts a ON b.phone = a.phone) AS U WHERE U.phone = $1;`;
 
@@ -225,7 +226,7 @@ userController.setCookie = (req, res, err, next) => {
     } else {
       if (
         !currentUser ||
-        !currentUser.business_name ||
+        !currentUser.name ||
         !currentUser.emaiil ||
         !currentUser.phone
       ) {
@@ -237,7 +238,7 @@ userController.setCookie = (req, res, err, next) => {
       }
 
       res.cookie('phone', currentUser.phone);
-      res.cookie('phone', currentUser.business_name);
+      res.cookie('phone', currentUser.name);
       res.cookie('phone', currentUser.emaiil);
     }
     // console.log('res.locals.user: ', res.locals.user);
