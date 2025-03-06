@@ -11,8 +11,8 @@ function Registration() {
   const navigate = useNavigate();
 
   const cycle = {
-    Customer: 'business',
-    Business: 'customer',
+    customer: 'business',
+    business: 'customer',
   };
 
   async function submit() {
@@ -42,8 +42,8 @@ function Registration() {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.usertype === 'business') {
-          navigate(`../business/${data.username}`);
+        if (userType === 'business') {
+          navigate('/businessdashboard');
         } else {
           navigate(`../customer/${data.username}`);
         }
